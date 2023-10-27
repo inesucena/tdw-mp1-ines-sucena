@@ -1,0 +1,132 @@
+name: MP1 Pipeline
+run-name: ${{ github.actor }} testing GitHub Actions
+on:
+  push:
+    # branches:
+     # - 'main'   a pipeline é acionada apenas quando ocorre um push na branch default
+  schedule:
+    - cron: '0 0 * * *'  # a pipeline é executada na branch default, às 00:00 de todos os dias da semana
+  repository_dispatch:
+    types: [publish-event]  #
+
+
+env:  # permite que a pipeline seja executada na branch default, sempre que os conteúdos do CMS forem atualizados (através de um webhook)
+  CONTENTFUL_ACCESS_TOKEN: ${{secrets.CONTENTFUL_ACCESS_TOKEN}}
+  CONTENTFUL_SPACE_ID: ${{secrets.CONTENTFUL_SPACE_ID}}
+
+
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies 
+        uses: actions/setup-node@v3  # configurar o ambiente da máquina virtual para trabalhar com o Node.js, para caso seja necessário
+        with:
+          node-version: 18
+      - run: npm ci  # instalar as dependências do projeto a partir do arquivo package-lock.json
+      - run: npm install  # instalar dependências adicionais ou para garantir que todas as dependências, incluindo as que podem não estar listadas no package-lock.json, estejam instaladas
+
+
+  jest:
+   runs-on: ubuntu-latest
+   needs: [install]  # só é executado na máquina virtual se a dependência for instalada com sucesso anteriormente
+   steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: "npm"  # guarda a informação para numa próxima a execução ser mais rápida
+    - run: npm ci
+
+    - name: Run jest
+      run: npm run test
+
+
+  prettier:
+   runs-on: ubuntu-latest
+   needs: [install]
+   steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: "npm" 
+    - run: npm ci
+
+    - name: Run prettier
+      run: npm run prettier
+
+
+  lint:
+   runs-on: ubuntu-latest
+   needs: [install]
+   steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+
+    - name: Install dependencies
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        cache: "npm"
+    - run: npm ci
+
+    - name: Run lint  
+      run: npm run lint
+
+  
+  build:
+    # esta condição permite que o trabalho seja executado somente quando ocorrer um push na branch default
+    if: ${{ github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    needs: [install,jest,prettier,lint]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+      - run: npm ci
+
+      - name: Run build  
+        run: npm run build
+        continue-on-error: true  # mesmo que existam erros permite avançar para o job seguinte
+      
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: build-files
+          path: out/
+
+        
+  deploy:
+    # o deploy será acionado apenas se as alterações forem na branch default e se o build for bem sucedido (não houver nenhum erro na execução da pipeline)
+    if: ${{ github.ref == 'refs/heads/main' && needs.build.outcome == 'success' }}
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3.0.1
+        with:
+          name: build-files
+          path: out/
+      - run: npx netlify-cli deploy --site ${{secrets.NETLIFY_SITE_ID}} --auth ${{secrets.NETLIFY_AUTH_TOKEN}} --prod
