@@ -7,13 +7,3 @@ pre-commit:
       run: npm run prettier
     jest:
       run: npm run test
-
-pre-push:
-  parallel: true
-  commands:
-    linter:
-      run: npm run lint
-    prettier:
-      run: npm run prettier
-    jest:
-      run: npm run test

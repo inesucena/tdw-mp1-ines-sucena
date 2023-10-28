@@ -2,7 +2,7 @@ name: MP1 Pipeline
 run-name: ${{ github.actor }} testing GitHub Actions
 on:
   push:
-     branches: 'main'   # a pipeline é acionada apenas quando ocorre um push na branch default
+    branches: "main" # a pipeline é acionada apenas quando ocorre um push na branch default
   schedule:
     - cron: "0 0 * * *" # a pipeline é executada na branch default, às 00:00 de todos os dias da semana
   repository_dispatch:
