@@ -90,12 +90,18 @@ jobs:
           cache: "npm"
       - run: npm ci
 
-      #  continue-on-error: true # mesmo que existam erros permite avançar para o job seguinte
+      - name: Run build
+        run: npm run build
+        env: # permite que a pipeline seja executada na branch default, sempre que os conteúdos do CMS forem atualizados (através de um webhook)
+          CONTENTFUL_ACCESS_TOKEN: ${{secrets.CONTENTFUL_ACCESS_TOKEN}}
+          CONTENTFUL_SPACE_ID: ${{secrets.CONTENTFUL_SPACE_ID}}
+
+        continue-on-error: true # mesmo que existam erros permite avançar para o job seguinte
 
 
   deploy:
     # o deploy será acionado apenas se as alterações forem na branch default e se o build for bem sucedido (não houver nenhum erro na execução da pipeline)
-    if: ${{ github.ref == 'refs/heads/main' }}
+    if: ${{ github.ref == 'refs/heads/main' && needs.build.outcome == 'success' }}
     runs-on: ubuntu-latest
     needs: [build]
     steps:
@@ -106,13 +112,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "npm"
-      - run: npm ci
-
-      - name: Run build
-        run: npm run build
-        env: # permite que a pipeline seja executada na branch default, sempre que os conteúdos do CMS forem atualizados (através de um webhook)
-          CONTENTFUL_ACCESS_TOKEN: ${{secrets.CONTENTFUL_ACCESS_TOKEN}}
-          CONTENTFUL_SPACE_ID: ${{secrets.CONTENTFUL_SPACE_ID}}
+      
+      - name: Download a Build Artifact
+        uses: actions/download-artifact@v3.0.1
+        with:
+          name: build-files
+          path: out/
 
       - run: npx netlify-cli deploy --site ${{secrets.NETLIFY_SITE_ID}} --auth ${{secrets.NETLIFY_AUTH_TOKEN}} --prod
