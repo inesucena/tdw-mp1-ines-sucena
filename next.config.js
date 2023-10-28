@@ -3,10 +3,10 @@ module.exports = {
   reactStrictMode: true,
   swcMinify: true,
   images: {
-    unoptimized: true
+    unoptimized: true,
   },
   experimental: {
     forceSwcTransforms: true,
   },
-  assetPrefix: '/',
-}
+  assetPrefix: "/",
+};

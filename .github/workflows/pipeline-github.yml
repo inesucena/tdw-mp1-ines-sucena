@@ -98,7 +98,6 @@ jobs:
 
         continue-on-error: true # mesmo que existam erros permite avançar para o job seguinte
 
-
   deploy:
     # o deploy será acionado apenas se as alterações forem na branch default e se o build for bem sucedido (não houver nenhum erro na execução da pipeline)
     if: ${{ github.ref == 'refs/heads/main' && needs.build.outcome == 'success' }}
@@ -112,5 +111,5 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-      
+
       - run: npx netlify-cli deploy --site ${{secrets.NETLIFY_SITE_ID}} --auth ${{secrets.NETLIFY_AUTH_TOKEN}} --prod
