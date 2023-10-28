@@ -1,12 +1,15 @@
 name: MP1 Pipeline
+
 run-name: ${{ github.actor }} testing GitHub Actions
 on:
   push:
-    branches: "main" # a pipeline é acionada apenas quando ocorre um push na branch default
+    branches: ["**"]
+  pull_request:
+    branches: [main]  # a pipeline é acionada apenas quando ocorre um push na branch default
   schedule:
-    - cron: "0 0 * * *" # a pipeline é executada na branch default, às 00:00 de todos os dias da semana
+    - cron: "0 0 * * *"  # a pipeline é executada na branch default, às 00:00 de todos os dias da semana
   repository_dispatch:
-    types: [contentful.deploy] #
+    types: [contentful.deploy]  # permissão para fazer trigger da pipeline
 
 jobs:
   install:
@@ -71,6 +74,7 @@ jobs:
         run: npm run lint
 
   build:
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main' || github.event_name == 'repository_dispatch' || github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
     needs: [install, jest, prettier, lint]
     steps:
@@ -93,7 +97,7 @@ jobs:
 
   deploy:
     # o deploy será acionado apenas se as alterações forem na branch default e se o build for bem sucedido (não houver nenhum erro na execução da pipeline)
-    if: github.event.pull_request.base.ref == 'main' || github.event_name == 'repository_dispatch'
+    if: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.ref == 'main' || github.event_name == 'repository_dispatch' || github.event_name == 'schedule' }}
     runs-on: ubuntu-latest
     needs: [build]
     steps:
