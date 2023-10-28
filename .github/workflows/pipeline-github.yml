@@ -9,7 +9,6 @@ on:
   repository_dispatch:
     types: [contentful.deploy] #
 
-
 jobs:
   install:
     runs-on: ubuntu-latest
