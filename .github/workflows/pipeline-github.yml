@@ -34,7 +34,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "npm" # guarda a informação para numa próxima a execução ser mais rápida
       - run: npm ci
 
       - name: Run jest
@@ -51,7 +50,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "npm"
       - run: npm ci
 
       - name: Run prettier
@@ -68,7 +66,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "npm"
       - run: npm ci
 
       - name: Run lint
@@ -87,7 +84,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          cache: "npm"
       - run: npm ci
 
       - name: Run build
