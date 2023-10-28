@@ -9,9 +9,6 @@ on:
   repository_dispatch:
     types: [contentful.deploy] #
 
-env: # permite que a pipeline seja executada na branch default, sempre que os conteúdos do CMS forem atualizados (através de um webhook)
-  CONTENTFUL_ACCESS_TOKEN: ${{secrets.CONTENTFUL_ACCESS_TOKEN}}
-  CONTENTFUL_SPACE_ID: ${{secrets.CONTENTFUL_SPACE_ID}}
 
 jobs:
   install:
@@ -95,6 +92,9 @@ jobs:
 
       - name: Run build
         run: npm run build
+        env: # permite que a pipeline seja executada na branch default, sempre que os conteúdos do CMS forem atualizados (através de um webhook)
+          CONTENTFUL_ACCESS_TOKEN: ${{secrets.CONTENTFUL_ACCESS_TOKEN}}
+          CONTENTFUL_SPACE_ID: ${{secrets.CONTENTFUL_SPACE_ID}}
         continue-on-error: true # mesmo que existam erros permite avançar para o job seguinte
 
       - name: Upload build artifact
