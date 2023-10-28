@@ -8,6 +8,9 @@
 /.next/
 /out/
 
+# git
+/.git/
+
 # production
 /build
 
