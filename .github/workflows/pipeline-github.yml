@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          # cache: "npm"
+          # cache: "npm" # serve para guardar info em cache para tornar o processo mais rápido
       - run: npm ci
 
       - name: Run jest
@@ -70,7 +70,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          # cache: "npm"
+          # cache: "npm" 
       - run: npm ci
 
       - name: Run lint
