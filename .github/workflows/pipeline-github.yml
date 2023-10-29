@@ -70,7 +70,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
-          # cache: "npm" 
+          # cache: "npm"
       - run: npm ci
 
       - name: Run lint
@@ -112,5 +112,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+      - run: npm ci
+      - run: npm build
 
       - run: npx netlify-cli deploy --site ${{secrets.NETLIFY_SITE_ID}} --auth ${{secrets.NETLIFY_AUTH_TOKEN}} --prod
