@@ -5,11 +5,11 @@ on:
   push:
     branches: ["**"]
   pull_request:
-    branches: [main]  # a pipeline é acionada apenas quando ocorre um push na branch default
+    branches: [main] # a pipeline é acionada apenas quando ocorre um push na branch default
   schedule:
-    - cron: "0 0 * * *"  # a pipeline é executada na branch default, às 00:00 de todos os dias da semana
+    - cron: "0 0 * * *" # a pipeline é executada na branch default, às 00:00 de todos os dias da semana
   repository_dispatch:
-    types: [contentful.deploy]  # permissão para fazer trigger da pipeline
+    types: [contentful.deploy] # permissão para fazer trigger da pipeline
 
 jobs:
   install:
@@ -36,6 +36,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          # cache: "npm"
       - run: npm ci
 
       - name: Run jest
@@ -52,6 +53,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          # cache: "npm"
       - run: npm ci
 
       - name: Run prettier
@@ -68,6 +70,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          # cache: "npm"
       - run: npm ci
 
       - name: Run lint
@@ -85,6 +88,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          # cache: "npm"
       - run: npm ci
 
       - name: Run build
