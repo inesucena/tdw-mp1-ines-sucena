@@ -1,6 +1,6 @@
 image: node:latest
 
-stages:  # Lista dos stages para os jobs e a sua ordem de execução
+stages: # Lista dos stages para os jobs e a sua ordem de execução
   - install
   - test
   - build
@@ -23,9 +23,9 @@ build-job:
   artifacts:
     paths:
       - out/
-            
-test-job:  # Apenas inicia quando o job build stage é concluido com sucesso
-  stage: test  # todos os testes abaixo run em paralelo
+
+test-job: # Apenas inicia quando o job build stage é concluido com sucesso
+  stage: test # todos os testes abaixo run em paralelo
   script:
     - npm run lint
     - npm run prettier
