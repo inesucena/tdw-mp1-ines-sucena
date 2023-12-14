@@ -6,8 +6,8 @@ on:
     branches: ["**"]
   pull_request:
     branches: [main] # a pipeline é acionada apenas quando ocorre um push na branch default
-  schedule:
-    - cron: "0 0 * * *" # a pipeline é executada na branch default, às 00:00 de todos os dias da semana
+  # schedule:
+    # - cron: "0 0 * * *" a pipeline é executada na branch default, às 00:00 de todos os dias da semana
   repository_dispatch:
     types: [contentful.deploy] # permissão para fazer trigger da pipeline
 
